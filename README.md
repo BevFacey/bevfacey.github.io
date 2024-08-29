@@ -1,5 +1,9 @@
 # Computers Classes
 
+---
+[Getting to know you questions](https://docs.google.com/forms/d/e/1FAIpQLSdI0Gpinc2_R6mTzW3npEIWQyYNSHY9d0whQQ3_bDVGzEQa_g/viewform)
+---
+
 * Submit modules to Mr. Hay via [this link](https://docs.google.com/forms/d/e/1FAIpQLScIZrjRTpD64dPnaIdrAFdmINwL3YrzpxbgST33zdBQeFD6ig/viewform)
 * [Programs of Study documents](https://github.com/BevFacey/bevfacey.github.io/tree/main/ProgramsOfStudy)
 * [Information for Everyone](everyone.md)
