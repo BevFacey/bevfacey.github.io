@@ -1,8 +1,8 @@
 # Facey Computers Activities for Everyone
 
-Grade 12 survey: https://docs.google.com/forms/d/e/1FAIpQLSccBTGvpppmp2qOa6aT7nfdLCIpuIwCHFngX4DJ7xJ8SdO8aw/viewform
+[Grade 12 survey](https://docs.google.com/forms/d/e/1FAIpQLSccBTGvpppmp2qOa6aT7nfdLCIpuIwCHFngX4DJ7xJ8SdO8aw/viewform)
 
-Grade 11 survey: https://docs.google.com/forms/d/e/1FAIpQLScS-6nY6h2d_7H8_kzUXWr-dh4I-Q7tA6xG7dV4ZfEDKOlNSg/viewform
+[Grade 11 survey](https://docs.google.com/forms/d/e/1FAIpQLScS-6nY6h2d_7H8_kzUXWr-dh4I-Q7tA6xG7dV4ZfEDKOlNSg/viewform)
 
 ---
 
