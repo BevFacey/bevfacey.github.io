@@ -51,11 +51,6 @@
 * Students develop an understanding of design problems through research and select, generate and evaluate possible solutions.
 * Prerequisite: None
 
-[DES1030: 2-D Design 1](DES1030.md)
-
-* Students develop skills and techniques for 2-D design by using tools, materials and processes common to 2-D design to complete a variety of project activities.
-* Prerequisite: [DES1020: The Design Process](DES1020.md)
-
 [DES1040: 3-D Design 1](DES1040.md)
 
 * Students develop skills and techniques for 3-D design, by using tools, materials and processes common to 3-D design to complete a variety of project activities.
