@@ -88,7 +88,7 @@ DES2035: 2-D Design 2
 * Students continue to develop skills and techniques for 2-D design by using tools, materials and processes common to 2-D design to complete a variety of project activities.
 * Prerequisite: [DES1030: 2-D Design 1](DES1030.md)
 
-DES2045: 3-D Design 2
+[DES2045: 3-D Design 2](DES2045.md)
 
 * Students continue to develop skills and techniques for 3-D design by using tools, materials and processes common to 3-D design to complete a variety of project activities.
 * Prerequisite: [DES1040: 3-D Design 1](DES1040.md)
@@ -99,11 +99,6 @@ Description: Students develop a historical framework and study the importance an
 Prerequisite: None
 
 ## Other
-
-COM1015: Media
-
-* Students discover the impact of the media and develop fundamental skills to relay a message effectively using various forms of media; e.g., photography, print, Web and audio or video production.
-* Prerequisite: [COM1005: Visual Composition](COM1005.md)
 
 COM2015: Media Impact
 
