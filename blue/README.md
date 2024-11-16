@@ -1,7 +1,5 @@
 # Cyberdefence
 
-ZuEP3xVZLc
-
 [Windows 11 Download](https://cpxvii.s3.us-east-1.amazonaws.com/cp17_r2/cp17_intro_r2_hsms_se_win11.zip)
 
 Checksum:  e284a2e2b09cb683daec3afc5aa81a5e
