@@ -61,7 +61,7 @@ COM2055: Web Design 2
 * Students are introduced to Internet computing through the use of one or more Web-specific markup languages. As part of this process, students learn how the Web uses markup languages to provide a client-side approach to display static information. Students also learn how to analyze, modify, write and debug algorithms and documents that use a markup language.
 * Prerequisite: None
 
-CSE1220: Client-side Scripting 2
+[CSE1220: Client-side Scripting 2](CSE1220.md)
 
 * Students deepen their understanding of Internet computing by using more advanced markup language techniques and by being introduced to one or more Web-specific scripting languages. As part of this process, students learn how the Web uses these resources as a means of displaying dynamic client-side information. Students learn how to analyze, modify, write and debug algorithms and scripts that use structured programming approaches.
 * Prerequisite: None
