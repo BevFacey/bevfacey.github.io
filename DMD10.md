@@ -1,5 +1,10 @@
 # Digital Media and Design 10
 
+* All students must complete [COM1005: Visual Composition](COM1005.md)
+* [DES1020: The Design Process](DES1020.md) is a prerequisite for many DES modules
+
+## Module Links and Descriptions
+
 [COM1005: Visual Composition](COM1005.md)
 
 * Students learn to employ fundamental elements and principles of design for various media and gain a strong foundational multidisciplinary experience in preparation for other Communication Technology courses.
