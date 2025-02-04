@@ -46,7 +46,7 @@
 
 ## Web Design
 
-COM1055: Web Design 1
+[COM1055: Web Design 1](COM1055.md)
 
 * Description: Students research the characteristics of effective Web page(s) and learn World Wide Web Consortium (W3C) conventions and accessibility concerns to construct a simple Web page.
 * Prerequisite: [COM1005: Visual Composition](COM1005.md)
