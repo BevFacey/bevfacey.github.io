@@ -32,7 +32,7 @@
 [COM2045: Vector Graphics 1](COM2045.md)
 
 * Vector graphics are commonly used in graphic design, page layout, typography, logos, sharp-edged artistic illustrations, technical illustrations, diagramming and flowcharting. In this course, students use vector editing software to create basic vector graphics.
-* Prerequisite: COM1035: Graphics Tools
+* Prerequisite: [COM1035: Graphics Tools](COM1035.md)
 
 [COM2155: Design – Brand Identity](COM2155.md)
 
@@ -66,7 +66,7 @@ COM2055: Web Design 2
 * Students deepen their understanding of Internet computing by using more advanced markup language techniques and by being introduced to one or more Web-specific scripting languages. As part of this process, students learn how the Web uses these resources as a means of displaying dynamic client-side information. Students learn how to analyze, modify, write and debug algorithms and scripts that use structured programming approaches.
 * Prerequisite: None
 
-CSE2210: Client-side Scripting 3
+[CSE2210: Client-side Scripting 3](CSE2210.md)
 
 * Students add to their understanding of Internet scripting by employing procedural programming techniques and fundamental data structures to create both static and dynamic client-side sites. Students learn how to analyze, modify, write and debug algorithms and scripts that use subprograms such as functions and data structures such as arrays.
 * Prerequisites: [CSE1220: Client-side Scripting 2](CSE1220.md), [CSE1120: Structured Programming 2](CSE1120.md)
