@@ -1,14 +1,13 @@
 # Digital Media and Design 10
 
+Join this [Google Classroom](https://classroom.google.com/c/ODI0OTY2NzA4Nzky?cjc=tj7p27si).
+
+---
+
+## Modules
+
 * All students must complete [COM1005: Visual Composition](COM1005.md)
 * [DES1020: The Design Process](DES1020.md) is a prerequisite for many DES modules
-* a recommended course sequence is
-  1. [COM1005: Visual Composition](COM1005.md)
-  2. [COM1105: Audio/Video](COM1105.md) or [COM1145: Animation 1](COM1145.md)
-  3. [COM1025: Typography](COM1025.md)
-  4. [COM1035: Graphic Tools](COM1035.md)
-  5. [DES1020: The Design Process](DES1020.md)
-  6. [COM1910: COM Project A](COM1910.md)
 
 ## Module Links and Descriptions
 
