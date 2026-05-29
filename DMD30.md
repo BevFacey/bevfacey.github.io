@@ -103,7 +103,7 @@ DES3145: Modelling – Real
 * Students apply rendering techniques to line drawings (base or developed), concentrating on light, colour and various media; e.g., coloured pencils, marker pens, water colours, computer rendering. Presentation techniques are used to compose high quality images to communicate a design solution.
 * Prerequisite: None
 
-DES3170: Future of Design
+[DES3170: Future of Design](DES3170.md)
 
 * Students explore new possibilities in design, including the role of the designer and the challenges that are faced by designers.
 * Prerequisite: None
