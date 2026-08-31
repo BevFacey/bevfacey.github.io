@@ -6,7 +6,7 @@ This can result in credit for a one-semester introductory university course in c
 
 1. Sign up for a [code.org](https://code.org/) account, if you haven't already.
 
-2. Join this course: [https://studio.code.org/join/KYQHXT](https://studio.code.org/join/KYQHXT)
+2. Join this course: [https://studio.code.org/join/HJQCXC](https://studio.code.org/join/HJQCXC)
 
 ## AP Exam
 
