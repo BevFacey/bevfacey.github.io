@@ -8,6 +8,19 @@ Use [this form](https://docs.google.com/forms/d/e/1FAIpQLSf6-FCE3Pv4VPFoPMZyqpwQ
 
 ---
 
+## Module Due Dates Fall 2026
+
+1. 2026-09-18
+2. 2026-10-09
+3. 2026-10-29
+4. 2026-11-24
+5. 2026-12-11
+6. 2027-01-13
+
+Resubmission deadline: 2027-01-20
+
+---
+
 * [Programs of Study documents](https://github.com/BevFacey/bevfacey.github.io/tree/main/ProgramsOfStudy)
 * [Information for Everyone](everyone.md)
 * [Possible Projects](projects.md)
