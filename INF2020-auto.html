@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INF2020: Keyboarding Assessment Suite</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font - Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .char-correct {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+    .char-incorrect {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      text-decoration: underline;
+    }
+    .char-current {
+      background-color: #3b82f6;
+      color: #ffffff;
+      animation: pulse-cursor 1.2s infinite;
+      border-radius: 2px;
+    }
+    @keyframes pulse-cursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .step-active {
+      border-color: #2563eb;
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+    .step-completed {
+      border-color: #10b981;
+      background-color: #10b981;
+      color: #ffffff;
+    }
+    .step-pending {
+      border-color: #cbd5e1;
+      background-color: #ffffff;
+      color: #64748b;
+    }
+    .cert-border {
+      border: 8px double #1e40af;
+    }
+    /* Spreadsheet ledger custom scrollbar */
+    .ledger-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .ledger-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .ledger-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-brand-600 text-white rounded-lg font-bold text-lg shadow-sm">
+          <i class="fa-solid fa-keyboard"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-900 leading-tight">Alberta CTS INF2020</h1>
+          <p class="text-xs text-slate-500">Keyboarding Competency Assessment Module</p>
+        </div>
+      </div>
+      
+      <!-- Student Badge Header Info -->
+      <div id="studentHeaderBadge" class="hidden flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+        <i class="fa-solid fa-user-circle text-brand-600 text-lg"></i>
+        <span id="headerStudentName" class="font-semibold text-sm text-slate-700">Student Name</span>
+        <span class="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">Active Session</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Tracker Stepper -->
+  <nav aria-label="Progress Stepper" class="max-w-6xl mx-auto px-4 pt-6 pb-2 w-full">
+    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+      <ol id="stepperList" class="flex items-center justify-between min-w-[650px] text-xs font-medium text-slate-500">
+        <!-- Step 1 -->
+        <li class="flex items-center space-x-2">
+          <span id="stepBadge-1" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs step-active">1</span>
+          <span class="font-semibold text-slate-800">Identity</span>
+        </li>
+        <li class="h-0.5 flex-1 bg-slate-200 mx-2"></li>
+        <!-- Step 2 -->
+        <li class="flex items-center space-x-2">
+          <span id="stepBadge-2" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs step-pending">2</span>
+          <span>Typing (1.1)</span>
+        </li>
+        <li class="h-0.5 flex-1 bg-slate-200 mx-2"></li>
+        <!-- Step 3 -->
+        <li class="flex items-center space-x-2">
+          <span id="stepBadge-3" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs step-pending">3</span>
+          <span>Numeric (1.2)</span>
+        </li>
+        <li class="h-0.5 flex-1 bg-slate-200 mx-2"></li>
+        <!-- Step 4 -->
+        <li class="flex items-center space-x-2">
+          <span id="stepBadge-4" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs step-pending">4</span>
+          <span>Knowledge & Self-Assessment</span>
+        </li>
+        <li class="h-0.5 flex-1 bg-slate-200 mx-2"></li>
+        <!-- Step 5 -->
+        <li class="flex items-center space-x-2">
+          <span id="stepBadge-5" class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs step-pending">5</span>
+          <span>Submission</span>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main Interactive Content Container -->
+  <main class="max-w-4xl mx-auto px-4 py-4 w-full flex-grow">
+
+    <!-- STEP 1: Student Identity Form -->
+    <section id="step1" class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+      <div class="max-w-md mx-auto text-center space-y-4">
+        <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold shadow-inner">
+          <i class="fa-solid fa-id-card"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-900">Welcome to INF2020 Keyboarding</h2>
+        <p class="text-sm text-slate-600">Please enter your first and last name to begin the assessment module. Your name will be remembered in this browser session.</p>
+        
+        <form id="identityForm" onsubmit="handleIdentitySubmit(event)" class="space-y-4 text-left mt-6">
+          <div>
+            <label for="firstName" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">First Name</label>
+            <input type="text" id="firstName" required placeholder="e.g., Jane" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
+          </div>
+          <div>
+            <label for="lastName" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Last Name</label>
+            <input type="text" id="lastName" required placeholder="e.g., Smith" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
+          </div>
+          <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg shadow hover:shadow-md transition flex items-center justify-center space-x-2">
+            <span>Begin Assessment</span>
+            <i class="fa-solid fa-arrow-right text-sm"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- STEP 2: Typing Competence Test (Outcome 1.1) -->
+    <section id="step2" class="hidden bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-slate-200 pb-4 flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-100">Outcome 1.1</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1">60-Second Alphabetic Typing Test</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Requirement: <strong>30–50 WPM</strong> with <strong>&le; 1 uncorrected error</strong> over a 60-second timed test. (Syllabic Index: 1.25)</p>
+        </div>
+        <button onclick="resetTypingTest()" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Reset Test</span>
+        </button>
+      </div>
+
+      <!-- Live Typing Metrics Dashboard -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Speed (WPM)</span>
+          <div id="typingWpm" class="text-2xl font-extrabold text-brand-600">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Accuracy</span>
+          <div id="typingAccuracy" class="text-2xl font-extrabold text-slate-800">100%</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Uncorrected Errors</span>
+          <div id="typingErrors" class="text-2xl font-extrabold text-emerald-600">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Time Remaining</span>
+          <div id="typingTime" class="text-2xl font-extrabold text-slate-800">60s</div>
+        </div>
+      </div>
+
+      <!-- Target Text Passage -->
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Target Text Passage:</label>
+        <div id="typingPassageDisplay" class="p-4 bg-slate-100 border border-slate-300 rounded-xl font-mono text-base md:text-lg leading-relaxed select-none max-h-48 overflow-y-auto tracking-wide">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Typing Text Area with Embedded Instructions -->
+      <div>
+        <textarea id="typingInput" onkeydown="handleTypingKeyDown(event)" oninput="handleTypingInput(event)" placeholder="Click here and start typing to begin the 60-second timer..." class="w-full p-4 font-mono text-base md:text-lg border-2 border-slate-300 rounded-xl focus:border-brand-500 focus:ring-0 outline-none transition h-32 resize-none"></textarea>
+      </div>
+
+      <!-- Live Status & Next Step Button -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-200">
+        <div id="typingStatusMsg" class="text-sm font-medium text-slate-600 flex items-center space-x-2">
+          <i class="fa-solid fa-circle-info text-brand-500"></i>
+          <span>Timer will start automatically on your first keystroke.</span>
+        </div>
+        <div>
+          <button id="typingNextBtn" onclick="goToStep(3)" class="hidden px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow transition flex items-center space-x-2">
+            <span>Proceed to Step 3</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Numeric Keypad Entry Test (Outcome 1.2) - Vertical Spreadsheet Layout -->
+    <section id="step3" class="hidden bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-6">
+      <div class="border-b border-slate-200 pb-4 flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-100">Outcome 1.2</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1">60-Second Numeric Keypad Test</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Requirement: <strong>100–150 KPM</strong> with <strong>&le; 1 uncorrected error</strong>. Use numeric keypad and press <strong>Enter</strong> after each value.</p>
+        </div>
+        <button onclick="resetNumericTest()" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-300 flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Reset Test</span>
+        </button>
+      </div>
+
+      <!-- Numeric Metrics Dashboard -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Speed (KPM)</span>
+          <div id="numericKpm" class="text-2xl font-extrabold text-brand-600">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Keystrokes</span>
+          <div id="numericKeystrokes" class="text-2xl font-extrabold text-slate-800">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Uncorrected Errors</span>
+          <div id="numericErrors" class="text-2xl font-extrabold text-emerald-600">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-center">
+          <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Time Remaining</span>
+          <div id="numericTime" class="text-2xl font-extrabold text-slate-800">60s</div>
+        </div>
+      </div>
+
+      <!-- Spreadsheet Ledger Layout Container -->
+      <div class="bg-slate-100 rounded-xl border border-slate-300 p-4">
+        <div class="grid grid-cols-12 gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-300 pb-2 mb-2 px-2">
+          <span class="col-span-1 text-center">Row</span>
+          <span class="col-span-5">Target Value (Ledger)</span>
+          <span class="col-span-6">Student Keypad Entry</span>
+        </div>
+
+        <!-- Scrollable Ledger List -->
+        <div id="numericLedgerContainer" class="ledger-scroll space-y-2 max-h-80 overflow-y-auto pr-1">
+          <!-- Dynamically populated vertical spreadsheet rows -->
+        </div>
+      </div>
+
+      <!-- Status & Navigation -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-200">
+        <div id="numericStatusMsg" class="text-sm font-medium text-slate-600 flex items-center space-x-2">
+          <i class="fa-solid fa-circle-info text-brand-500"></i>
+          <span>Click the active row and type using your 10-key pad. Press <strong>ENTER</strong> to advance.</span>
+        </div>
+        <div>
+          <button id="numericNextBtn" onclick="goToStep(4)" class="hidden px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow transition flex items-center space-x-2">
+            <span>Proceed to Step 4</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Workstation Routines & Career Roles Quiz & Self Assessment -->
+    <section id="step4" class="hidden bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-8">
+      
+      <!-- Part A: Quiz -->
+      <div class="space-y-6">
+        <div class="border-b border-slate-200 pb-4 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-bold uppercase text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-100">Outcomes 2.1, 2.2, 4.1, 4.2</span>
+            <h2 class="text-2xl font-bold text-slate-900 mt-1">Part A: Workstation Routines & Career Roles Quiz</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Select the correct response for each ergonomics, security, and career planning question.</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-500 font-bold uppercase">Current Score</span>
+            <div id="quizLiveScore" class="text-xl font-black text-brand-600">0 / 10</div>
+          </div>
+        </div>
+
+        <form id="quizForm" class="space-y-6">
+          <div id="quizQuestionsContainer" class="space-y-6">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </form>
+      </div>
+
+      <!-- Part B: Self Assessment Rubric -->
+      <div class="space-y-6 pt-4 border-t border-slate-200">
+        <div class="border-b border-slate-200 pb-4">
+          <span class="text-xs font-bold uppercase text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full border border-brand-100">Outcomes 3.1, 3.2, 3.3</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1">Part B: Basic Competencies Self-Assessment</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Rate your personal demonstration of core workplace skills on a scale of 1 to 4.</p>
+        </div>
+
+        <form id="selfAssessmentForm" class="space-y-6">
+          <div id="selfAssessmentContainer" class="space-y-6">
+            <!-- Populated dynamically via JS -->
+          </div>
+
+          <div class="pt-4 border-t border-slate-200 flex justify-between items-center">
+            <span id="step4ValidationMsg" class="text-sm font-medium text-amber-600">Please complete all quiz questions and ratings.</span>
+            <button type="button" onclick="validateAndCompleteStep4()" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg shadow transition">
+              Complete Assessment & Proceed
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- STEP 5: Final Results & Google Form Submission -->
+    <section id="step5" class="hidden bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm space-y-8">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-sm">
+          <i class="fa-solid fa-award"></i>
+        </div>
+        <h2 class="text-3xl font-extrabold text-slate-900">Assessment Summary Certificate</h2>
+        <p class="text-sm text-slate-600">Congratulations! You have completed all required INF2020 Keyboarding outcomes.</p>
+      </div>
+
+      <!-- Certificate Card -->
+      <div class="cert-border p-6 bg-slate-50 rounded-xl space-y-6 relative overflow-hidden">
+        <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+          <div>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Student Profile</span>
+            <h3 id="summaryStudentName" class="text-xl font-bold text-slate-800">Jane Smith</h3>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Date Completed</span>
+            <p id="summaryDate" class="text-sm font-semibold text-slate-700">2026-09-29</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+            <span class="text-xs font-bold text-slate-500 uppercase">Typing Speed</span>
+            <p id="summaryWpm" class="text-xl font-black text-brand-600">-- WPM</p>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+            <span class="text-xs font-bold text-slate-500 uppercase">Typing Accuracy</span>
+            <p id="summaryAccuracy" class="text-xl font-black text-slate-800">-- %</p>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+            <span class="text-xs font-bold text-slate-500 uppercase">Numeric Speed</span>
+            <p id="summaryKpm" class="text-xl font-black text-brand-600">-- KPM</p>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+            <span class="text-xs font-bold text-slate-500 uppercase">Quiz Score</span>
+            <p id="summaryQuiz" class="text-xl font-black text-slate-800">-- / 10</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-lg border border-slate-200 flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-500 uppercase">Self-Assessment Score:</span>
+          <span id="summarySelfAvg" class="text-lg font-bold text-emerald-600">4.0 / 4.0</span>
+        </div>
+      </div>
+
+      <!-- Option C: Google Form Submission -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 space-y-4">
+        <div class="flex items-start space-x-3">
+          <i class="fa-solid fa-cloud-arrow-up text-brand-600 text-xl mt-0.5"></i>
+          <div class="flex-1">
+            <h4 class="font-bold text-slate-900 text-sm">Submit Assessment Data to Teacher's Google Sheet</h4>
+            <p class="text-xs text-slate-600 mt-0.5">Configure Google Form response submission endpoint and entry IDs below.</p>
+          </div>
+        </div>
+
+        <details class="text-xs text-slate-600">
+          <summary class="font-semibold cursor-pointer text-brand-600 hover:underline">Configure Google Form Endpoint Settings</summary>
+          <div class="mt-3 space-y-3 bg-white p-3 rounded-lg border border-blue-100">
+            <div>
+              <label class="block font-bold text-slate-700 mb-0.5">Form Action URL (formResponse):</label>
+              <input type="text" id="gformUrl" placeholder="https://docs.google.com/forms/d/e/.../formResponse" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">First Name Entry ID:</label>
+                <input type="text" id="entryFirstName" placeholder="entry.123456789" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">Last Name Entry ID:</label>
+                <input type="text" id="entryLastName" placeholder="entry.987654321" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">WPM Entry ID:</label>
+                <input type="text" id="entryWpm" placeholder="entry.111111111" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">Accuracy Entry ID:</label>
+                <input type="text" id="entryAccuracy" placeholder="entry.222222222" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">KPM Entry ID:</label>
+                <input type="text" id="entryKpm" placeholder="entry.333333333" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-0.5">Quiz Score Entry ID:</label>
+                <input type="text" id="entryQuiz" placeholder="entry.444444444" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          <button onclick="submitToGoogleForm()" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg shadow transition flex items-center space-x-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Submit Results</span>
+          </button>
+          <button onclick="window.print()" class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold rounded-lg transition flex items-center space-x-2">
+            <i class="fa-solid fa-print"></i>
+            <span>Print Certificate</span>
+          </button>
+        </div>
+        <div id="submitFeedback" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+    <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-500">
+      Alberta CTS Curriculum Framework &bull; INF2020: Keyboarding Standards Compliance
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       Global Application State
+       ========================================================================== */
+    const TEST_DURATION = 60; // Standard 60-second test duration
+
+    const appState = {
+      currentStep: 1,
+      student: {
+        firstName: '',
+        lastName: ''
+      },
+      typing: {
+        passage: "Keyboarding is an essential foundational skill in modern technology education. When students type with proper finger placement, ergonomic posture, and rhythmic movement, their writing speed increases significantly. Good habits formed early eliminate unnecessary strain on wrist joints and improve general productivity across various school subjects. Keyboarding efficiency empowers learners to compose thoughts smoothly without cognitive interruption.",
+        timeRemaining: TEST_DURATION,
+        timerInterval: null,
+        hasStarted: false,
+        isActive: false,
+        wpm: 0,
+        accuracy: 100,
+        uncorrectedErrors: 0,
+        completed: false
+      },
+      numeric: {
+        // Large bank of invoice numbers/decimals for fast typists
+        bank: [
+          "104.50", "9823", "44.12", "705.10", "88.90", "512.00", "9041", "33.75", 
+          "119.40", "6520", "881.05", "42.90", "305.60", "7712", "12.45", "990.10", 
+          "4501", "83.20", "614.95", "2204", "109.80", "55.30", "9120", "440.15", 
+          "62.00", "7831", "134.25", "902.50", "3110", "84.60", "205.10", "6719", 
+          "48.95", "1032", "780.00", "93.40", "415.80", "8821", "19.99", "604.20"
+        ],
+        currentRow: 0,
+        entries: [],
+        timeRemaining: TEST_DURATION,
+        timerInterval: null,
+        hasStarted: false,
+        isActive: false,
+        kpm: 0,
+        keystrokes: 0,
+        uncorrectedErrors: 0,
+        completed: false
+      },
+      quiz: {
+        score: 0,
+        answers: {}
+      },
+      selfAssessment: {
+        ratings: {},
+        average: 0
+      }
+    };
+
+    const quizQuestions = [
+      {
+        id: "q1",
+        outcome: "2.1 Health & Safety",
+        question: "What is the recommended elbow and wrist position when sitting at a keyboard workstation?",
+        options: [
+          "Elbows bent at 90 degrees with wrists resting flat/level without bending upwards",
+          "Wrists bent downwards resting heavily on the desk edge",
+          "Elbows fully extended forward towards the monitor",
+          "Wrists elevated high above the home row key plane"
+        ],
+        correct: 0
+      },
+      {
+        id: "q2",
+        outcome: "2.1 Posture & Ergonomics",
+        question: "To minimize eye strain and neck fatigue, how should your computer monitor be positioned?",
+        options: [
+          "Directly at eye level or slightly below, approximately an arm's length away",
+          "Far to the left side of the desk at maximum brightness",
+          "Tilted upwards high above your normal line of sight",
+          "Flat on the table top pointing straight up"
+        ],
+        correct: 0
+      },
+      {
+        id: "q3",
+        outcome: "2.2 Digital Security",
+        question: "Which practice best secures your personal student work on school computer hardware?",
+        options: [
+          "Logging out of browser sessions and locking your workstation when walking away",
+          "Sharing your login password with a classmate for quick access",
+          "Saving all sensitive assignments to a public desktop folder",
+          "Leaving your computer logged in continuously during breaks"
+        ],
+        correct: 0
+      },
+      {
+        id: "q4",
+        outcome: "2.2 Hardware Security",
+        question: "How should computer peripheral cables and power cords be managed at a workstation?",
+        options: [
+          "Kept organized and clear of foot traffic areas to prevent tripping hazards and port damage",
+          "Stretched tightly across walkways between desks",
+          "Wrapped tightly around hot power supply bricks",
+          "Dangled loosely over the front lip of the chair"
+        ],
+        correct: 0
+      },
+      {
+        id: "q5",
+        outcome: "4.1 Opportunities & Barriers",
+        question: "When recognizing career opportunities involving text and numeric entry skills, which of the following represents a barrier?",
+        options: [
+          "Lack of ergonomic workstation setup leading to repetitive strain injury (RSI)",
+          "High keyboard touch typing speed above 50 WPM",
+          "Familiarity with spreadsheet software shortcuts",
+          "Strong proofreading and error identification skills"
+        ],
+        correct: 0
+      },
+      {
+        id: "q6",
+        outcome: "4.2 Career Resources",
+        question: "Which resource is most effective for maximizing touch-typing speed and accuracy opportunities?",
+        options: [
+          "Consistent daily typing drills using correct touch-keystroke finger placement",
+          "Looking down at the key caps while typing to confirm key locations",
+          "Using only two index fingers to achieve faster single taps",
+          "Ignoring uncorrected errors in order to increase speed metrics"
+        ],
+        correct: 0
+      },
+      {
+        id: "q7",
+        outcome: "2.1 Health & Safety",
+        question: "What is 'Repetitive Strain Injury' (RSI) in relation to keyboarding routines?",
+        options: [
+          "Discomfort or tissue damage in wrists/hands caused by awkward posture and prolonged repetitive movements",
+          "A temporary drop in typing speed due to lack of focus",
+          "An electrical short circuit inside the physical keyboard hardware",
+          "A software glitch that prevents characters from displaying"
+        ],
+        correct: 0
+      },
+      {
+        id: "q8",
+        outcome: "2.2 Software Protection",
+        question: "What should you do if software on your workstation prompts an unexpected malware warning?",
+        options: [
+          "Notify your teacher or system administrator immediately without clicking suspicious links",
+          "Ignore the warning and continue entering data",
+          "Download external removal tools from unknown internet links",
+          "Turn off the monitor and walk away without reporting"
+        ],
+        correct: 0
+      },
+      {
+        id: "q9",
+        outcome: "4.1 Life Roles",
+        question: "In what modern life/career role is touch-keyboarding competence critical?",
+        options: [
+          "Data analyst, medical transcriptionist, programmer, and administrative coordinator",
+          "Only professional computer hardware repair technicians",
+          "Exclusively graphic design artists using drawing tablets",
+          "Only commercial airline pilots and drivers"
+        ],
+        correct: 0
+      },
+      {
+        id: "q10",
+        outcome: "2.1 Workstation Hygiene",
+        question: "Which workplace routine promotes clean hardware and healthy physical conditions?",
+        options: [
+          "Keeping food and open liquid containers away from keyboards and hardware peripherals",
+          "Eating snacks directly over the keys while typing fast",
+          "Cleaning monitors with harsh abrasive household chemicals",
+          "Blocking cooling ventilation grilles on desktop computer cases"
+        ],
+        correct: 0
+      }
+    ];
+
+    const selfAssessmentCriteria = [
+      {
+        id: "sa1",
+        code: "3.1.1 & 3.1.2",
+        title: "Communication & Information Management",
+        desc: "I can accurately transmit written information and double-check my work for spelling and formatting errors."
+      },
+      {
+        id: "sa2",
+        code: "3.1.3 & 3.1.4",
+        title: "Numerical Skill & Problem Solving",
+        desc: "I can enter numeric data accurately using a keypad and troubleshoot typing mistakes systematically."
+      },
+      {
+        id: "sa3",
+        code: "3.2.1 - 3.2.5",
+        title: "Personal Management & Work Safety",
+        desc: "I demonstrate positive attitudes, take responsibility for my ergonomics, and learn continuously."
+      },
+      {
+        id: "sa4",
+        code: "3.3.1 & 3.3.2",
+        title: "Teamwork & Collaborative Participation",
+        desc: "I respect shared hardware equipment, assist peers in learning, and participate productively in tasks."
+      }
+    ];
+
+    window.onload = function() {
+      checkStoredIdentity();
+      renderPassageDisplay();
+      renderNumericLedger();
+      renderQuiz();
+      renderSelfAssessment();
+    };
+
+    function checkStoredIdentity() {
+      const stored = localStorage.getItem('inf2020_student');
+      if (stored) {
+        try {
+          const data = JSON.parse(stored);
+          if (data.firstName && data.lastName) {
+            appState.student = data;
+            updateHeaderStudentBadge();
+            goToStep(2);
+          }
+        } catch(e) {
+          console.error("Error loading stored student identity:", e);
+        }
+      }
+    }
+
+    function handleIdentitySubmit(e) {
+      e.preventDefault();
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+      if (!first || !last) return;
+
+      appState.student.firstName = first;
+      appState.student.lastName = last;
+      localStorage.setItem('inf2020_student', JSON.stringify(appState.student));
+      
+      updateHeaderStudentBadge();
+      goToStep(2);
+    }
+
+    function updateHeaderStudentBadge() {
+      const badge = document.getElementById('studentHeaderBadge');
+      const nameSpan = document.getElementById('headerStudentName');
+      nameSpan.textContent = `${appState.student.firstName} ${appState.student.lastName}`;
+      badge.classList.remove('hidden');
+    }
+
+    function goToStep(stepNum) {
+      appState.currentStep = stepNum;
+
+      for (let i = 1; i <= 5; i++) {
+        const sec = document.getElementById(`step${i}`);
+        const badge = document.getElementById(`stepBadge-${i}`);
+        
+        if (sec) {
+          if (i === stepNum) {
+            sec.classList.remove('hidden');
+          } else {
+            sec.classList.add('hidden');
+          }
+        }
+
+        if (badge) {
+          badge.className = "w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs ";
+          if (i < stepNum) {
+            badge.classList.add('step-completed');
+            badge.innerHTML = `<i class="fa-solid fa-check"></i>`;
+          } else if (i === stepNum) {
+            badge.classList.add('step-active');
+            badge.textContent = i;
+          } else {
+            badge.classList.add('step-pending');
+            badge.textContent = i;
+          }
+        }
+      }
+
+      if (stepNum === 5) {
+        populateSummary();
+      }
+    }
+
+    /* ==========================================================================
+       Outcome 1.1: Alphabetic Typing Competence Test (60s Countdown)
+       ========================================================================== */
+    function renderPassageDisplay() {
+      const container = document.getElementById('typingPassageDisplay');
+      const p = appState.typing.passage;
+      let html = '';
+      for (let i = 0; i < p.length; i++) {
+        html += `<span id="tchar-${i}">${p[i]}</span>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function handleTypingKeyDown(e) {
+      if (!appState.typing.hasStarted && !appState.typing.completed) {
+        startTypingTimer();
+      }
+    }
+
+    function startTypingTimer() {
+      appState.typing.hasStarted = true;
+      appState.typing.isActive = true;
+      appState.typing.timeRemaining = TEST_DURATION;
+
+      document.getElementById('typingStatusMsg').innerHTML = `<span class="text-brand-600 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Timer active! 60 seconds remaining...</span>`;
+
+      if (appState.typing.timerInterval) clearInterval(appState.typing.timerInterval);
+      
+      appState.typing.timerInterval = setInterval(() => {
+        appState.typing.timeRemaining--;
+        document.getElementById('typingTime').textContent = `${appState.typing.timeRemaining}s`;
+
+        if (appState.typing.timeRemaining <= 0) {
+          finishTypingTest();
+        }
+      }, 1000);
+    }
+
+    function handleTypingInput(e) {
+      if (!appState.typing.isActive && appState.typing.hasStarted) return;
+
+      const typed = e.target.value;
+      const passage = appState.typing.passage;
+      let uncorrected = 0;
+
+      for (let i = 0; i < passage.length; i++) {
+        const charSpan = document.getElementById(`tchar-${i}`);
+        if (!charSpan) continue;
+
+        if (i < typed.length) {
+          if (typed[i] === passage[i]) {
+            charSpan.className = 'char-correct';
+          } else {
+            charSpan.className = 'char-incorrect';
+            uncorrected++;
+          }
+        } else if (i === typed.length) {
+          charSpan.className = 'char-current';
+        } else {
+          charSpan.className = '';
+        }
+      }
+
+      // WPM Calculation over 60 seconds elapsed ratio
+      const elapsedSeconds = TEST_DURATION - appState.typing.timeRemaining;
+      const elapsedMinutes = Math.max(elapsedSeconds, 1) / 60;
+      const wordsTyped = typed.length / 5;
+      const wpm = Math.round(wordsTyped / elapsedMinutes);
+
+      let accuracy = 100;
+      if (typed.length > 0) {
+        const totalErrors = passage.substring(0, typed.length).split('').filter((c, idx) => c !== typed[idx]).length;
+        accuracy = Math.max(0, Math.round(((typed.length - totalErrors) / typed.length) * 100));
+      }
+
+      appState.typing.wpm = wpm;
+      appState.typing.accuracy = accuracy;
+      appState.typing.uncorrectedErrors = uncorrected;
+
+      document.getElementById('typingWpm').textContent = wpm;
+      document.getElementById('typingAccuracy').textContent = `${accuracy}%`;
+      const errElem = document.getElementById('typingErrors');
+      errElem.textContent = uncorrected;
+      errElem.className = uncorrected <= 1 ? 'text-2xl font-extrabold text-emerald-600' : 'text-2xl font-extrabold text-red-600';
+    }
+
+    function finishTypingTest() {
+      appState.typing.isActive = false;
+      clearInterval(appState.typing.timerInterval);
+      
+      const input = document.getElementById('typingInput');
+      input.disabled = true;
+
+      const passWpm = appState.typing.wpm >= 30;
+      const passErrors = appState.typing.uncorrectedErrors <= 1;
+
+      const status = document.getElementById('typingStatusMsg');
+      const nextBtn = document.getElementById('typingNextBtn');
+
+      if (passWpm && passErrors) {
+        appState.typing.completed = true;
+        status.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Test Completed & Passed! Score: ${appState.typing.wpm} WPM with ${appState.typing.uncorrectedErrors} errors.</span>`;
+        nextBtn.classList.remove('hidden');
+      } else {
+        appState.typing.completed = false;
+        let reasons = [];
+        if (!passWpm) reasons.push(`Speed was ${appState.typing.wpm} WPM (Requires &ge; 30 WPM)`);
+        if (!passErrors) reasons.push(`${appState.typing.uncorrectedErrors} errors (Max allowed is 1)`);
+
+        status.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Test Finished - Outcome not met: ${reasons.join('; ')}. Click 'Reset Test' to try again.</span>`;
+      }
+    }
+
+    function resetTypingTest() {
+      appState.typing.isActive = false;
+      appState.typing.hasStarted = false;
+      clearInterval(appState.typing.timerInterval);
+      appState.typing.timeRemaining = TEST_DURATION;
+      appState.typing.wpm = 0;
+      appState.typing.accuracy = 100;
+      appState.typing.uncorrectedErrors = 0;
+
+      document.getElementById('typingWpm').textContent = '0';
+      document.getElementById('typingAccuracy').textContent = '100%';
+      document.getElementById('typingErrors').textContent = '0';
+      document.getElementById('typingErrors').className = 'text-2xl font-extrabold text-emerald-600';
+      document.getElementById('typingTime').textContent = `${TEST_DURATION}s`;
+
+      const input = document.getElementById('typingInput');
+      input.value = '';
+      input.disabled = false;
+      input.placeholder = "Click here and start typing to begin the 60-second timer...";
+
+      document.getElementById('typingNextBtn').classList.add('hidden');
+      document.getElementById('typingStatusMsg').innerHTML = `<i class="fa-solid fa-circle-info text-brand-500"></i><span>Timer will start automatically on your first keystroke.</span>`;
+
+      renderPassageDisplay();
+    }
+
+    /* ==========================================================================
+       Outcome 1.2: Vertical Spreadsheet Numeric Keypad Test (60s Countdown)
+       ========================================================================== */
+    function renderNumericLedger() {
+      const container = document.getElementById('numericLedgerContainer');
+      let html = '';
+
+      appState.numeric.bank.forEach((val, idx) => {
+        const isActiveRow = idx === appState.numeric.currentRow;
+        html += `
+          <div id="numRow-${idx}" class="grid grid-cols-12 gap-2 items-center p-2 rounded-lg transition border ${isActiveRow ? 'bg-blue-50 border-blue-400 shadow-sm' : 'bg-white border-slate-200'}">
+            <span class="col-span-1 text-center font-mono text-xs text-slate-400 font-bold">${idx + 1}</span>
+            <div class="col-span-5 font-mono text-base md:text-lg font-bold text-slate-800 tracking-wider">
+              ${val}
+            </div>
+            <div class="col-span-6 flex items-center space-x-2">
+              <input type="text" id="numInput-${idx}" 
+                onkeydown="handleNumericKeyDown(event, ${idx})" 
+                placeholder="${isActiveRow ? 'Click & type, press Enter...' : ''}" 
+                class="w-full px-3 py-1.5 font-mono text-base border rounded outline-none transition ${isActiveRow ? 'border-brand-500 ring-2 ring-brand-200 bg-white' : 'border-slate-200 bg-slate-50'}"
+                ${isActiveRow ? '' : 'disabled'}>
+              <span id="numStatus-${idx}" class="text-sm font-bold w-6 text-center"></span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function handleNumericKeyDown(e, rowIdx) {
+      if (!appState.numeric.hasStarted && !appState.numeric.completed) {
+        startNumericTimer();
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitNumericRow(rowIdx);
+      }
+    }
+
+    function startNumericTimer() {
+      appState.numeric.hasStarted = true;
+      appState.numeric.isActive = true;
+      appState.numeric.timeRemaining = TEST_DURATION;
+
+      document.getElementById('numericStatusMsg').innerHTML = `<span class="text-brand-600 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Numeric entry test active! 60s remaining...</span>`;
+
+      if (appState.numeric.timerInterval) clearInterval(appState.numeric.timerInterval);
+
+      appState.numeric.timerInterval = setInterval(() => {
+        appState.numeric.timeRemaining--;
+        document.getElementById('numericTime').textContent = `${appState.numeric.timeRemaining}s`;
+
+        if (appState.numeric.timeRemaining <= 0) {
+          finishNumericTest();
+        }
+      }, 1000);
+    }
+
+    function submitNumericRow(rowIdx) {
+      if (!appState.numeric.isActive) return;
+
+      const input = document.getElementById(`numInput-${rowIdx}`);
+      const statusSpan = document.getElementById(`numStatus-${rowIdx}`);
+      const enteredVal = input.value.trim();
+      const targetVal = appState.numeric.bank[rowIdx];
+
+      // Track Entry
+      const isCorrect = enteredVal === targetVal;
+      appState.numeric.entries[rowIdx] = {
+        target: targetVal,
+        entered: enteredVal,
+        correct: isCorrect
+      };
+
+      if (isCorrect) {
+        statusSpan.innerHTML = `<i class="fa-solid fa-check text-emerald-600"></i>`;
+      } else {
+        statusSpan.innerHTML = `<i class="fa-solid fa-xmark text-red-600"></i>`;
+      }
+
+      // Update Live Keystroke & Error Metrics
+      calculateNumericMetrics();
+
+      // Lock current row and advance focus to next row
+      input.disabled = true;
+      appState.numeric.currentRow = rowIdx + 1;
+
+      if (appState.numeric.currentRow < appState.numeric.bank.length) {
+        renderNumericLedger();
+        const nextInput = document.getElementById(`numInput-${appState.numeric.currentRow}`);
+        if (nextInput) {
+          nextInput.focus();
+        }
+      } else {
+        finishNumericTest();
+      }
+    }
+
+    function calculateNumericMetrics() {
+      let totalKeystrokes = 0;
+      let uncorrectedErrors = 0;
+
+      appState.numeric.entries.forEach(entry => {
+        if (!entry) return;
+        totalKeystrokes += entry.entered.length + 1; // +1 for Enter key
+        if (!entry.correct) {
+          uncorrectedErrors++;
+        }
+      });
+
+      const elapsedSeconds = TEST_DURATION - appState.numeric.timeRemaining;
+      const elapsedMinutes = Math.max(elapsedSeconds, 1) / 60;
+      const kpm = Math.round(totalKeystrokes / elapsedMinutes);
+
+      appState.numeric.kpm = kpm;
+      appState.numeric.keystrokes = totalKeystrokes;
+      appState.numeric.uncorrectedErrors = uncorrectedErrors;
+
+      document.getElementById('numericKpm').textContent = kpm;
+      document.getElementById('numericKeystrokes').textContent = totalKeystrokes;
+      const errElem = document.getElementById('numericErrors');
+      errElem.textContent = uncorrectedErrors;
+      errElem.className = uncorrectedErrors <= 1 ? 'text-2xl font-extrabold text-emerald-600' : 'text-2xl font-extrabold text-red-600';
+    }
+
+    function finishNumericTest() {
+      appState.numeric.isActive = false;
+      clearInterval(appState.numeric.timerInterval);
+
+      // Disable all inputs
+      appState.numeric.bank.forEach((_, idx) => {
+        const input = document.getElementById(`numInput-${idx}`);
+        if (input) input.disabled = true;
+      });
+
+      const passKpm = appState.numeric.kpm > 100;
+      const passErrors = appState.numeric.uncorrectedErrors <= 1;
+
+      const status = document.getElementById('numericStatusMsg');
+      const nextBtn = document.getElementById('numericNextBtn');
+
+      if (passKpm && passErrors) {
+        appState.numeric.completed = true;
+        status.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Numeric Test Passed! Score: ${appState.numeric.kpm} KPM with ${appState.numeric.uncorrectedErrors} uncorrected errors.</span>`;
+        nextBtn.classList.remove('hidden');
+      } else {
+        appState.numeric.completed = false;
+        let reasons = [];
+        if (!passKpm) reasons.push(`Speed was ${appState.numeric.kpm} KPM (Requires > 100 KPM)`);
+        if (!passErrors) reasons.push(`${appState.numeric.uncorrectedErrors} errors (Max allowed is 1)`);
+
+        status.innerHTML = `<span class="text-red-600 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Requirements not met: ${reasons.join('; ')}. Click 'Reset Test' to try again.</span>`;
+      }
+    }
+
+    function resetNumericTest() {
+      appState.numeric.isActive = false;
+      appState.numeric.hasStarted = false;
+      clearInterval(appState.numeric.timerInterval);
+      appState.numeric.timeRemaining = TEST_DURATION;
+      appState.numeric.currentRow = 0;
+      appState.numeric.entries = [];
+      appState.numeric.kpm = 0;
+      appState.numeric.keystrokes = 0;
+      appState.numeric.uncorrectedErrors = 0;
+
+      document.getElementById('numericKpm').textContent = '0';
+      document.getElementById('numericKeystrokes').textContent = '0';
+      document.getElementById('numericErrors').textContent = '0';
+      document.getElementById('numericErrors').className = 'text-2xl font-extrabold text-emerald-600';
+      document.getElementById('numericTime').textContent = `${TEST_DURATION}s`;
+
+      document.getElementById('numericNextBtn').classList.add('hidden');
+      document.getElementById('numericStatusMsg').innerHTML = `<i class="fa-solid fa-circle-info text-brand-500"></i><span>Click the active row and type using your 10-key pad. Press <strong>ENTER</strong> to advance.</span>`;
+
+      renderNumericLedger();
+    }
+
+    /* ==========================================================================
+       Step 4: Knowledge Quiz & Self Assessment Rendering
+       ========================================================================== */
+    function renderQuiz() {
+      const container = document.getElementById('quizQuestionsContainer');
+      let html = '';
+
+      quizQuestions.forEach((q, idx) => {
+        html += `
+          <div class="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded border border-brand-100">${q.outcome}</span>
+              <span class="text-xs text-slate-400 font-medium">Question ${idx + 1} of ${quizQuestions.length}</span>
+            </div>
+            <p class="font-semibold text-slate-800 text-sm md:text-base">${q.question}</p>
+            <div class="space-y-2 pt-1">
+        `;
+
+        q.options.forEach((opt, optIdx) => {
+          html += `
+            <label class="flex items-start space-x-3 p-2.5 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition">
+              <input type="radio" name="${q.id}" value="${optIdx}" onchange="handleQuizSelect('${q.id}', ${optIdx})" class="mt-1 text-brand-600 focus:ring-brand-500">
+              <span class="text-xs md:text-sm text-slate-700">${opt}</span>
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+            <div id="feedback-${q.id}" class="hidden text-xs font-semibold pt-1"></div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function handleQuizSelect(qId, selectedIdx) {
+      appState.quiz.answers[qId] = selectedIdx;
+      updateQuizLiveScore();
+    }
+
+    function updateQuizLiveScore() {
+      let score = 0;
+      quizQuestions.forEach(q => {
+        if (appState.quiz.answers[q.id] === q.correct) {
+          score++;
+        }
+      });
+      appState.quiz.score = score;
+      document.getElementById('quizLiveScore').textContent = `${score} / ${quizQuestions.length}`;
+    }
+
+    function renderSelfAssessment() {
+      const container = document.getElementById('selfAssessmentContainer');
+      let html = '';
+
+      selfAssessmentCriteria.forEach((crit) => {
+        html += `
+          <div class="p-5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded border border-brand-100">Outcome ${crit.code}</span>
+              <span class="text-xs font-bold text-slate-500">1 - 4 Scale</span>
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm md:text-base">${crit.title}</h4>
+              <p class="text-xs text-slate-600 mt-0.5">${crit.desc}</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2">
+        `;
+
+        const levels = [
+          { val: 1, label: "1 - Developing" },
+          { val: 2, label: "2 - Competent" },
+          { val: 3, label: "3 - Proficient" },
+          { val: 4, label: "4 - Exemplary" }
+        ];
+
+        levels.forEach(lvl => {
+          html += `
+            <label class="flex items-center space-x-2 p-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition text-xs font-medium">
+              <input type="radio" name="${crit.id}" value="${lvl.val}" onchange="handleSelfAssessSelect('${crit.id}', ${lvl.val})" class="text-brand-600 focus:ring-brand-500">
+              <span>${lvl.label}</span>
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function handleSelfAssessSelect(id, rating) {
+      appState.selfAssessment.ratings[id] = rating;
+      const keys = Object.keys(appState.selfAssessment.ratings);
+      if (keys.length > 0) {
+        const sum = keys.reduce((acc, k) => acc + appState.selfAssessment.ratings[k], 0);
+        appState.selfAssessment.average = (sum / keys.length).toFixed(1);
+      }
+    }
+
+    function validateAndCompleteStep4() {
+      const answeredQuiz = Object.keys(appState.quiz.answers).length;
+      const answeredSelf = Object.keys(appState.selfAssessment.ratings).length;
+
+      if (answeredQuiz < quizQuestions.length || answeredSelf < selfAssessmentCriteria.length) {
+        document.getElementById('step4ValidationMsg').textContent = `Please complete all 10 quiz questions and 4 self-assessment ratings before proceeding.`;
+        return;
+      }
+
+      // Display question feedback
+      quizQuestions.forEach(q => {
+        const fb = document.getElementById(`feedback-${q.id}`);
+        if (!fb) return;
+        fb.classList.remove('hidden');
+        if (appState.quiz.answers[q.id] === q.correct) {
+          fb.className = "text-xs font-bold text-emerald-600 mt-1 flex items-center space-x-1";
+          fb.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Correct!</span>`;
+        } else {
+          fb.className = "text-xs font-bold text-red-600 mt-1 flex items-center space-x-1";
+          fb.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> <span>Incorrect. Correct answer: ${q.options[q.correct]}</span>`;
+        }
+      });
+
+      goToStep(5);
+    }
+
+    /* ==========================================================================
+       Step 5: Certificate & Submission Controller
+       ========================================================================== */
+    function populateSummary() {
+      document.getElementById('summaryStudentName').textContent = `${appState.student.firstName} ${appState.student.lastName}`;
+      document.getElementById('summaryDate').textContent = new Date().toISOString().split('T')[0];
+      
+      document.getElementById('summaryWpm').textContent = `${appState.typing.wpm} WPM`;
+      document.getElementById('summaryAccuracy').textContent = `${appState.typing.accuracy}%`;
+      document.getElementById('summaryKpm').textContent = `${appState.numeric.kpm} KPM`;
+      document.getElementById('summaryQuiz').textContent = `${appState.quiz.score} / ${quizQuestions.length}`;
+      document.getElementById('summarySelfAvg').textContent = `${appState.selfAssessment.average} / 4.0`;
+    }
+
+    function submitToGoogleForm() {
+      const formUrl = document.getElementById('gformUrl').value.trim();
+      const feedback = document.getElementById('submitFeedback');
+
+      const eFirst = document.getElementById('entryFirstName').value.trim();
+      const eLast = document.getElementById('entryLastName').value.trim();
+      const eWpm = document.getElementById('entryWpm').value.trim();
+      const eAccuracy = document.getElementById('entryAccuracy').value.trim();
+      const eKpm = document.getElementById('entryKpm').value.trim();
+      const eQuiz = document.getElementById('entryQuiz').value.trim();
+
+      if (!formUrl) {
+        feedback.classList.remove('hidden');
+        feedback.className = "p-3 rounded-lg text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-300";
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Assessment completed and logged locally! (Enter Google Form URL to post directly to your teacher's sheet).`;
+        return;
+      }
+
+      const formData = new FormData();
+      if (eFirst) formData.append(eFirst, appState.student.firstName);
+      if (eLast) formData.append(eLast, appState.student.lastName);
+      if (eWpm) formData.append(eWpm, appState.typing.wpm);
+      if (eAccuracy) formData.append(eAccuracy, appState.typing.accuracy);
+      if (eKpm) formData.append(eKpm, appState.numeric.kpm);
+      if (eQuiz) formData.append(eQuiz, appState.quiz.score);
+
+      feedback.classList.remove('hidden');
+      feedback.className = "p-3 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-300";
+      feedback.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting response data to Google Form...`;
+
+      fetch(formUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      }).then(() => {
+        feedback.className = "p-3 rounded-lg text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-300";
+        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Successfully submitted to Google Form!`;
+      }).catch(err => {
+        console.error("Submission error:", err);
+        feedback.className = "p-3 rounded-lg text-sm font-medium bg-amber-100 text-amber-800 border border-amber-300";
+        feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Network request completed.`;
+      });
+    }
+  </script>
+</body>
+</html>
