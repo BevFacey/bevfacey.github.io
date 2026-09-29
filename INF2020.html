@@ -399,45 +399,9 @@
           <i class="fa-solid fa-cloud-arrow-up text-brand-600 text-xl mt-0.5"></i>
           <div class="flex-1">
             <h4 class="font-bold text-slate-900 text-sm">Submit Assessment Data to Teacher's Google Sheet</h4>
-            <p class="text-xs text-slate-600 mt-0.5">Configure Google Form response submission endpoint and entry IDs below.</p>
+            <p class="text-xs text-slate-600 mt-0.5">Submit your assessment results to your teacher's Google Sheet.</p>
           </div>
         </div>
-
-        <details class="text-xs text-slate-600">
-          <summary class="font-semibold cursor-pointer text-brand-600 hover:underline">Configure Google Form Endpoint Settings</summary>
-          <div class="mt-3 space-y-3 bg-white p-3 rounded-lg border border-blue-100">
-            <div>
-              <label class="block font-bold text-slate-700 mb-0.5">Form Action URL (formResponse):</label>
-              <input type="text" id="gformUrl" placeholder="https://docs.google.com/forms/d/e/.../formResponse" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">First Name Entry ID:</label>
-                <input type="text" id="entryFirstName" placeholder="entry.123456789" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">Last Name Entry ID:</label>
-                <input type="text" id="entryLastName" placeholder="entry.987654321" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">WPM Entry ID:</label>
-                <input type="text" id="entryWpm" placeholder="entry.111111111" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">Accuracy Entry ID:</label>
-                <input type="text" id="entryAccuracy" placeholder="entry.222222222" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">KPM Entry ID:</label>
-                <input type="text" id="entryKpm" placeholder="entry.333333333" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-0.5">Quiz Score Entry ID:</label>
-                <input type="text" id="entryQuiz" placeholder="entry.444444444" class="w-full p-2 border border-slate-300 rounded font-mono text-xs">
-              </div>
-            </div>
-          </div>
-        </details>
 
         <div class="flex flex-wrap gap-3 pt-2">
           <button onclick="submitToGoogleForm()" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg shadow transition flex items-center space-x-2">
@@ -1259,30 +1223,17 @@
     }
 
     function submitToGoogleForm() {
-      const formUrl = document.getElementById('gformUrl').value.trim();
+      const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSeQSnlbHRuY6FWISa8vB0FcyWaVF5G_hIyGkgy9KEPlsMa8yg/formResponse';
       const feedback = document.getElementById('submitFeedback');
 
-      const eFirst = document.getElementById('entryFirstName').value.trim();
-      const eLast = document.getElementById('entryLastName').value.trim();
-      const eWpm = document.getElementById('entryWpm').value.trim();
-      const eAccuracy = document.getElementById('entryAccuracy').value.trim();
-      const eKpm = document.getElementById('entryKpm').value.trim();
-      const eQuiz = document.getElementById('entryQuiz').value.trim();
-
-      if (!formUrl) {
-        feedback.classList.remove('hidden');
-        feedback.className = "p-3 rounded-lg text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-300";
-        feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Assessment completed and logged locally! (Enter Google Form URL to post directly to your teacher's sheet).`;
-        return;
-      }
-
       const formData = new FormData();
-      if (eFirst) formData.append(eFirst, appState.student.firstName);
-      if (eLast) formData.append(eLast, appState.student.lastName);
-      if (eWpm) formData.append(eWpm, appState.typing.wpm);
-      if (eAccuracy) formData.append(eAccuracy, appState.typing.accuracy);
-      if (eKpm) formData.append(eKpm, appState.numeric.kpm);
-      if (eQuiz) formData.append(eQuiz, appState.quiz.score);
+      formData.append('entry.1399223208', appState.student.firstName);
+      formData.append('entry.1257603875', appState.student.lastName);
+      formData.append('entry.1078125047', appState.typing.wpm);
+      formData.append('entry.1858626533', appState.typing.accuracy);
+      formData.append('entry.241875724', appState.numeric.kpm);
+      formData.append('entry.321552190', appState.quiz.score);
+      formData.append('entry.2137440357', appState.selfAssessment.average);
 
       feedback.classList.remove('hidden');
       feedback.className = "p-3 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-300";
