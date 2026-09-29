@@ -36,7 +36,7 @@ Resubmission deadline: 2027-01-20
 
 ### Information Processing
 
-* [INF2020: Keyboarding](INF2020.md) or [INF2020: Keyboarding Assignments](INF2020)
+* [INF2020: Keyboarding](INF2020.html) or [INF2020: Keyboarding Assignments](INF2020)
 * [INF1030: Word Processing 1](INF1030)
 * [INF1060: Spreadsheet 1](INF1060)
 * [INF1070: Digital Presentation](INF1070)
