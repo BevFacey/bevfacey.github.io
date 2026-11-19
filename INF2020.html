@@ -101,7 +101,7 @@
       <!-- Student Badge Header Info -->
       <div id="studentHeaderBadge" class="hidden flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
         <i class="fa-solid fa-user-circle text-brand-600 text-lg"></i>
-        <span id="headerStudentName" class="font-semibold text-sm text-slate-700">Student Name</span>
+        <button type="button" id="headerStudentName" onclick="editIdentity()" aria-label="Change student name" class="font-semibold text-sm text-slate-700 hover:text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-600 rounded">Student Name</button>
         <span class="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">Active Session</span>
       </div>
     </div>
@@ -154,7 +154,7 @@
           <i class="fa-solid fa-id-card"></i>
         </div>
         <h2 class="text-2xl font-bold text-slate-900">INF2020: Keyboarding</h2>
-        <p class="text-sm text-slate-600">Please enter your first and last name to begin the assessment.</p>
+        <p id="identityInstructions" class="text-sm text-slate-600">Please enter your first and last name to begin the assessment.</p>
         
         <form id="identityForm" onsubmit="handleIdentitySubmit(event)" class="space-y-4 text-left mt-6">
           <div>
@@ -166,9 +166,10 @@
             <input type="text" id="lastName" required placeholder="e.g., Smith" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
           </div>
           <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg shadow hover:shadow-md transition flex items-center justify-center space-x-2">
-            <span>Begin Assessment</span>
+            <span id="identitySubmitLabel">Begin Assessment</span>
             <i class="fa-solid fa-arrow-right text-sm"></i>
           </button>
+          <button type="button" id="identityCancelBtn" onclick="cancelIdentityEdit()" class="hidden w-full py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold rounded-lg transition">Cancel</button>
         </form>
       </div>
     </section>
@@ -430,6 +431,7 @@
        Global Application State
        ========================================================================== */
     const TEST_DURATION = 60; // Standard 60-second test duration
+    let identityReturnStep = null;
 
     const appState = {
       currentStep: 1,
@@ -668,18 +670,53 @@
       const last = document.getElementById('lastName').value.trim();
       if (!first || !last) return;
 
+      const nameChanged = first !== appState.student.firstName || last !== appState.student.lastName;
       appState.student.firstName = first;
       appState.student.lastName = last;
       localStorage.setItem('inf2020_student', JSON.stringify(appState.student));
-      
+
+      if (nameChanged) document.getElementById('submitFeedback').classList.add('hidden');
       updateHeaderStudentBadge();
-      goToStep(2);
+      finishIdentityEdit();
+    }
+
+    function editIdentity() {
+      if (identityReturnStep !== null) return;
+
+      if (appState.typing.isActive || appState.numeric.isActive) {
+        if (!window.confirm('Changing your name will reset the current timed test. Continue?')) return;
+        if (appState.typing.isActive) resetTypingTest();
+        if (appState.numeric.isActive) resetNumericTest();
+      }
+
+      identityReturnStep = appState.currentStep;
+      document.getElementById('firstName').value = appState.student.firstName;
+      document.getElementById('lastName').value = appState.student.lastName;
+      document.getElementById('identityInstructions').textContent = 'Update your first and last name, then return to your assessment.';
+      document.getElementById('identitySubmitLabel').textContent = 'Save Name';
+      document.getElementById('identityCancelBtn').classList.remove('hidden');
+      goToStep(1);
+      document.getElementById('firstName').focus();
+    }
+
+    function cancelIdentityEdit() {
+      finishIdentityEdit();
+    }
+
+    function finishIdentityEdit() {
+      const returnStep = identityReturnStep === null ? 2 : identityReturnStep;
+      identityReturnStep = null;
+      document.getElementById('identityInstructions').textContent = 'Please enter your first and last name to begin the assessment.';
+      document.getElementById('identitySubmitLabel').textContent = 'Begin Assessment';
+      document.getElementById('identityCancelBtn').classList.add('hidden');
+      goToStep(returnStep);
     }
 
     function updateHeaderStudentBadge() {
       const badge = document.getElementById('studentHeaderBadge');
       const nameSpan = document.getElementById('headerStudentName');
       nameSpan.textContent = `${appState.student.firstName} ${appState.student.lastName}`;
+      nameSpan.setAttribute('aria-label', `Change student name: ${nameSpan.textContent}`);
       badge.classList.remove('hidden');
     }
 
@@ -1227,6 +1264,8 @@
       const feedback = document.getElementById('submitFeedback');
 
       const formData = new FormData();
+      const submittedFirstName = appState.student.firstName;
+      const submittedLastName = appState.student.lastName;
       formData.append('entry.1399223208', appState.student.firstName);
       formData.append('entry.1257603875', appState.student.lastName);
       formData.append('entry.1078125047', appState.typing.wpm);
@@ -1244,10 +1283,12 @@
         mode: 'no-cors',
         body: formData
       }).then(() => {
+        if (submittedFirstName !== appState.student.firstName || submittedLastName !== appState.student.lastName) return;
         feedback.className = "p-3 rounded-lg text-sm font-medium bg-emerald-100 text-emerald-800 border border-emerald-300";
         feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Successfully submitted to Google Form!`;
       }).catch(err => {
         console.error("Submission error:", err);
+        if (submittedFirstName !== appState.student.firstName || submittedLastName !== appState.student.lastName) return;
         feedback.className = "p-3 rounded-lg text-sm font-medium bg-amber-100 text-amber-800 border border-amber-300";
         feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Network request completed.`;
       });
